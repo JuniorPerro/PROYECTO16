@@ -125,7 +125,7 @@ public class InternamientoService {
         sql = "SELECT ROL FROM PERSONAL WHERE ID_PERSONAL = ?";
         String rol = jdbcTemplate.queryForObject(sql, String.class, idPersonal);
 
-        if (!Objects.equals(rol, "Enfermera")) {
+        if (!Objects.equals(rol, "Admision Hospitalaria")) {
             throw new RuntimeException("Solo el personal autorizado puede registrar internamientos.");
         }
     }

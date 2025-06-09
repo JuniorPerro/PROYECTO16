@@ -25,7 +25,7 @@ public class ConsultaCamaService {
         List<CamaConsultaDto> camas = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(CamaConsultaDto.class), piso);
 
         if (camas.isEmpty()) {
-            throw new RuntimeException("El piso no existe o no tiene camas registradas.");
+            throw new RuntimeException("El piso no existe");
         }
 
         return camas;
@@ -42,7 +42,7 @@ public class ConsultaCamaService {
         List<CamaConsultaDto> camas = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(CamaConsultaDto.class), pabellon);
 
         if (camas.isEmpty()) {
-            throw new RuntimeException("El pabellón no existe o no tiene camas registradas.");
+            throw new RuntimeException("El pabellón no existe");
         }
 
         return camas;
