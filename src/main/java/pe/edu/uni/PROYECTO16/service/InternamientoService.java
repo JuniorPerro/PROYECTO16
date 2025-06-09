@@ -11,6 +11,7 @@ import pe.edu.uni.PROYECTO16.dto.InternamientoDto;
 import pe.edu.uni.PROYECTO16.dto.RespuestaInternamientoDto;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 
@@ -32,6 +33,9 @@ public class InternamientoService {
         ValidarMedico(bean.getIdMedico());
         ValidarCama(bean.getIdCama());
         ValidarInternamientoPaciente(bean.getIdPaciente());
+
+        validarCamaPabellonMedico(bean.getIdCama(), bean.getIdMedico());
+
         ValidarPersonalRegistro(bean.getIdPersonalRegistro());
         ValidarDiagnosticoPaciente(bean.getIdDiagnostico(), bean.getIdPaciente());
         ValidarMedicoDiagnostico(bean.getIdMedico(), bean.getIdDiagnostico());
@@ -93,10 +97,10 @@ public class InternamientoService {
     }
 
     private void ValidarCama(int idCama){
-        String sql = "select count(1) cont from MEDICO where ID_MEDICO = ?";
+        String sql = "select count(1) cont from CAMA where ID_CAMA = ?";
         int cont = jdbcTemplate.queryForObject(sql,Integer.class,idCama);
         if(cont==0){
-            throw new RuntimeException("Medico con id " + idCama + " no existe.");
+            throw new RuntimeException("Cama con id " + idCama + " no existe.");
         }
     }
 
@@ -117,7 +121,11 @@ public class InternamientoService {
         if (cont == 0) {
             throw new RuntimeException("El ID del personal de registro no existe.");
         }
-        if (idPersonal != 1) {
+
+        sql = "SELECT ROL FROM PERSONAL WHERE ID_PERSONAL = ?";
+        String rol = jdbcTemplate.queryForObject(sql, String.class, idPersonal);
+
+        if (!Objects.equals(rol, "Enfermera")) {
             throw new RuntimeException("Solo el personal autorizado puede registrar internamientos.");
         }
     }
@@ -159,6 +167,22 @@ public class InternamientoService {
             throw new RuntimeException("El médico no está asociado con el diagnóstico especificado.");
         }
     }
+
+    private void validarCamaPabellonMedico(int idCama, int idMedico) {
+        String sql = """
+        SELECT COUNT(*) FROM CAMA c
+        JOIN HABITACION h ON c.ID_HABITACION = h.ID_HABITACION
+        JOIN ESPECIALIDAD_PABELLON ep ON h.PABELLON = ep.PABELLON
+        JOIN MEDICO m ON m.ESPECIALIDAD = ep.ESPECIALIDAD
+        WHERE c.ID_CAMA = ? AND m.ID_MEDICO = ?
+    """;
+
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, idCama, idMedico);
+        if (count == 0) {
+            throw new RuntimeException("La cama seleccionada no corresponde al pabellón asignado a la especialidad del médico.");
+        }
+    }
+
 
 
 
