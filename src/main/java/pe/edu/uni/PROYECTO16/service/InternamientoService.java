@@ -35,11 +35,10 @@ public class InternamientoService {
         ValidarInternamientoPaciente(bean.getIdPaciente());
 
         validarCamaPabellonMedico(bean.getIdCama(), bean.getIdMedico());
-
         ValidarPersonalRegistro(bean.getIdPersonalRegistro());
+        ValidarExistenciaDiagnostico(bean.getIdDiagnostico());
         ValidarDiagnosticoPaciente(bean.getIdDiagnostico(), bean.getIdPaciente());
         ValidarMedicoDiagnostico(bean.getIdMedico(), bean.getIdDiagnostico());
-        ValidarExistenciaDiagnostico(bean.getIdPaciente());
 
         String estadoInternamiento = DeterminarEstadoInternamiento(bean.getIdCama());
 
@@ -140,11 +139,11 @@ public class InternamientoService {
 
 
 
-    private void ValidarExistenciaDiagnostico(int idPaciente) {
-        String sql = "SELECT COUNT(1) FROM DIAGNOSTICO WHERE ID_PACIENTE = ?";
-        int cont = jdbcTemplate.queryForObject(sql, Integer.class, idPaciente);
+    private void ValidarExistenciaDiagnostico(int idDiagnostico) {
+        String sql = "SELECT COUNT(1) FROM DIAGNOSTICO WHERE ID_DIAGNOSTICO = ?";
+        int cont = jdbcTemplate.queryForObject(sql, Integer.class, idDiagnostico);
         if (cont == 0) {
-            throw new RuntimeException("No se encontró diagnóstico para el paciente.");
+            throw new RuntimeException("No existe el Diagnostico con el id " + idDiagnostico + ".");
         }
     }
 
@@ -182,10 +181,5 @@ public class InternamientoService {
             throw new RuntimeException("La cama seleccionada no corresponde al pabellón asignado a la especialidad del médico.");
         }
     }
-
-
-
-
-
 
 }
